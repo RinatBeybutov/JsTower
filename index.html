@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="style.css">
+
+<body>
+    <div id="testDiv"></div>
+    <form id="start-game-form">
+        <input type="button" id="start-game-button" value="Start game">
+        <div class="input-radio count-disks">
+            <label>Count disks: </label>
+            <input name="count-disks" type="radio" value="3">3
+            <input name="count-disks" type="radio" value="4">4
+            <input name="count-disks" type="radio" value="5">5
+        </div>
+        <div class="input-radio timer">
+            <label>Timer: </label>
+            <input name="timer" type="radio" value="on">on
+            <input name="timer" type="radio" value="off">off
+        </div>
+        <div class="input-radio count-steps">
+            <label>Count steps: </label>
+            <input name="count-steps" type="radio" value="on">on
+            <input name="count-steps" type="radio" value="off">off
+        </div>
+    </form>
+    <script src="tower.js"></script>
+</body>
+
+</html>

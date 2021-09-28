@@ -1,0 +1,52 @@
+html {
+    background-color: #A1F868;
+    opacity: 0.9;
+}
+
+#canvas {
+    width: 70%;
+    height: 70%;
+    position: absolute;
+    left: 15%;
+    top: 15%;
+    background-color: white;
+    opacity: 0.5;
+}
+
+#start-game-form {
+    background-color: blanchedalmond;
+    width: 400px;
+    height: 400px;
+    left: 18%;
+    top: 18%;
+    position: absolute;
+}
+
+.input-radio {
+    right: 50px;
+    position: absolute;
+}
+
+.count-disks {
+    top: 100px;
+}
+
+.timer {
+    top: 150px;
+}
+
+.count-steps {
+    top: 200px;
+}
+
+#start-game-button {
+    position: absolute;
+    bottom: 20%;
+    left: 10%;
+    width: 80%;
+    height: 10%;
+}
+
+.hide {
+    display: none;
+}
