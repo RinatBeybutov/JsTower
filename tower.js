@@ -3,26 +3,117 @@ document.getElementById("testDiv").innerHTML = "<canvas id='canvas'></canvas>";
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let form = document.getElementById("start-game-form");
+let buttonMenu = document.getElementById("main-menu-button");
+//buttonMenu.hidden = true;
 
 let skeletonOfTowers = [
-    [6, 4, 2, 0, 0],
+    [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
 ];
 
 let postionCursor = 0; // 0  1  2
 let widthUppedBox = 0;
+let blockGame = false;
+let countDisks;
+let isTimerOn;
+let isStepsOn;
+
+var overlay      = document.querySelector('#overlay-modal'),
+       closeButton = document.querySelector('.modal__cross'),
+       modalForm = document.querySelector('.modal');
+
+function unhideModal() {
+    overlay.classList.add("active");
+    modalForm.classList.add("active");
+}
+
+function hideModal() {
+    modalForm.classList.remove("active");
+    overlay.classList.remove("active");
+}
+
+closeButton.onclick = hideModal;
+
+document.querySelectorAll(".menu-button").forEach(function(item){
+    item.onclick = goToMenu;
+    
+});
+
+document.querySelector(".restart").onclick = function() {
+    blockGame = false;
+    hideModal();
+    createStartPosition();
+}
+
+function goToMenu() {
+    blockGame = false;
+    form.hidden = false;
+    buttonMenu.hidden = true;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hideModal();
+}
 
 document.getElementById('start-game-button').onclick = function () {
+    document.getElementsByName('count-disks').forEach(function(item, i, array) {
+        if(item.checked) {
+            countDisks = Number.parseInt(item.value);
+        }
+    });
+
+    document.getElementsByName('timer').forEach(function(item, i, array) {
+        if(item.checked && item.value == "on") {
+            isTimerOn = true;
+        }
+        if(item.checked && item.value == "off") {
+            isTimerOn = false;
+        }
+    });
+
+    document.getElementsByName('count-steps').forEach(function(item, i, array) {
+        if(item.checked && item.value == "on") {
+            isStepsOn = true;
+        }
+        if(item.checked && item.value == "off") {
+            isStepsOn = false;
+        }
+    });
+
+    form.hidden = true;
+    buttonMenu.hidden = false;
+    createStartPosition();        
 
 }
 
-form.hidden = true;
-updateCanvas();
+function createStartPosition() {
+    switch(countDisks) {
+        case 3:
+            skeletonOfTowers = [
+                [6, 4, 2, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ];
+            break;
+        case 4:
+            skeletonOfTowers = [
+                [7, 5, 3, 1, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ];
+            break;
+        case 5:
+            skeletonOfTowers = [
+                [7, 6, 5, 4, 3],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ];
+            break;
+    }
+    postionCursor = 0;
+    updateCanvas();
+}
 
 document.addEventListener('keyup', function (event) {
-
-    console.log("button + " + event.code);
 
     switch (event.code) {
         case "ArrowUp":
@@ -33,43 +124,56 @@ document.addEventListener('keyup', function (event) {
         case "ArrowDown":
             if (widthUppedBox !== 0) {
                 moveDown();
+                if(checkEndOfGame()) {
+                    unhideModal();
+                    blockGame = true;
+                    //Вызвать окно с результатом и кнопками рестарт
+                    // и меню
+                }
             }
             break;
         case "ArrowLeft":
-            moveLeft();
+            changeCursor("left");
             break;
         case "ArrowRight":
-            moveRight();
+            changeCursor("right");
             break;
     }
 });
 
-function moveLeft() {
-    switch (postionCursor) {
-        case 1:
-            postionCursor = 0;
-            updateCanvas();
-            break;
-        case 2:
-            postionCursor = 1;
-            updateCanvas();
-            break;
+function checkEndOfGame () {
+    let isSecondTowerFull = true;
+    let isThirdTowerFull = true;
 
-    }
+    skeletonOfTowers[0].forEach(function(value, index, array){
+        if(value !== 0) {
+            isSecondTowerFull = false;
+            isThirdTowerFull = false;
+        }
+    });
+    skeletonOfTowers[2].forEach(function(value, index, array){
+        if(value !== 0) {
+            isSecondTowerFull = false;
+        }
+    });
+    skeletonOfTowers[1].forEach(function(value, index, array){
+        if(value !== 0) {
+            isThirdTowerFull = false;
+        }
+    });
+    return isThirdTowerFull || isSecondTowerFull;
 }
 
-function moveRight() {
-    switch (postionCursor) {
-        case 0:
-            postionCursor = 1;
-            updateCanvas();
-            break;
-        case 1:
-            postionCursor = 2;
-            updateCanvas();
-            break;
-
+function changeCursor(direction) {
+    if(direction === "left" && postionCursor !== 0) {
+        postionCursor--;
     }
+
+    if(direction === "right" && postionCursor !== 2) {
+        postionCursor++;
+    }
+
+    updateCanvas();
 }
 
 function moveUp() {
@@ -120,7 +224,7 @@ function pushArray(position) {
             widthUppedBox = 0;
             break;
         }
-        if (tmpArray[i] != 0) {
+        if (tmpArray[i] != 0 && tmpArray[i] > widthUppedBox) {
             tmpArray[i + 1] = widthUppedBox;
             widthUppedBox = 0;
             break;
@@ -130,9 +234,12 @@ function pushArray(position) {
 }
 
 function updateCanvas() {
+    if(blockGame) {
+        return;
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "orange";
-    let width = 15; //35
+
+    let widthMultiplier = 5;
     let height = 5;
     let x;
     let widthCursor = 8;
@@ -142,6 +249,17 @@ function updateCanvas() {
     let x0 = 40;
     let x1 = x0 + deltaBetweenTowers;
     let x2 = x1 + deltaBetweenTowers;
+    ctx.fillStyle = "black";
+    ctx.fillRect(40 - 15, 105, 30, 4);
+    ctx.fillRect(40 - 2, 70, 4, 35);
+
+    ctx.fillRect(x1 - 15, 105, 30, 4);
+    ctx.fillRect(x1 - 2, 70, 4, 35);
+
+    ctx.fillRect(x2 - 15, 105, 30, 4);
+    ctx.fillRect(x2 - 2, 70, 4, 35);
+
+    ctx.fillStyle = "orange";
     skeletonOfTowers.forEach(function (valueArray, i, skeletonOfTowers) {
         switch(i) {
             case 0:
@@ -155,29 +273,18 @@ function updateCanvas() {
                 break;
         }
         valueArray.forEach(function (value, i, valueArray) {
-            ctx.fillRect(x - value * 5 / 2, y, value * 5, height);  // x  y  width  height
+            ctx.fillRect(x - value * widthMultiplier / 2, y, value * widthMultiplier, height);  // x  y  width  height
             y -= 8;
         });
         y = y0;
-
     });
     if (widthUppedBox !== 0) {
-        ctx.fillRect(x0 + postionCursor * deltaBetweenTowers - widthUppedBox * 5 / 2,
-            20, widthUppedBox * 5, 5);
+        ctx.fillRect(x0 + postionCursor * deltaBetweenTowers - widthUppedBox * widthMultiplier / 2,
+            20, widthUppedBox * widthMultiplier, 5);
     }
     ctx.fillStyle = "gray";
-
-    switch (postionCursor) {
-        case 0:
-            ctx.fillRect(x0 - widthCursor / 2, 110, widthCursor, 5);
-            break;
-        case 1:
-            ctx.fillRect(deltaBetweenTowers + x0 - widthCursor / 2 , 110, widthCursor, 5);
-            break;
-        case 2:
-            ctx.fillRect(2 * deltaBetweenTowers + x0 - widthCursor / 2, 110, widthCursor, 5);
-            break;
-    }
+    ctx.fillRect(x0 + postionCursor * deltaBetweenTowers - widthCursor / 2, 110, widthCursor, 5);
+    
 }
 
 

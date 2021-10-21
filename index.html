@@ -12,22 +12,34 @@
         <input type="button" id="start-game-button" value="Start game">
         <div class="input-radio count-disks">
             <label>Count disks: </label>
-            <input name="count-disks" type="radio" value="3">3
+            <input name="count-disks" type="radio" checked='true' value="3">3
             <input name="count-disks" type="radio" value="4">4
             <input name="count-disks" type="radio" value="5">5
         </div>
         <div class="input-radio timer">
             <label>Timer: </label>
-            <input name="timer" type="radio" value="on">on
+            <input name="timer" type="radio" checked='true' value="on">on
             <input name="timer" type="radio" value="off">off
         </div>
         <div class="input-radio count-steps">
             <label>Count steps: </label>
-            <input name="count-steps" type="radio" value="on">on
+            <input name="count-steps" type="radio" checked='true' value="on">on
             <input name="count-steps" type="radio" value="off">off
         </div>
     </form>
+    <input type="button" class="menu-button" id="main-menu-button" value="Menu" hidden = true>
+    
+    <div class="modal" data-modal="1">
+        <svg class="modal__cross" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z"/></svg>
+        <p class="modal__title">Результат</p>
+        <p class="time">Время: </p>
+        <p class="count-steps-result">Количество шагов: </p>
+        <input type="button" class="menu-button" value="Menu">
+        <input type="button" class="restart" value="Restart">
+    </div>
+    
+    <div class="overlay" id="overlay-modal"></div>
+    
     <script src="tower.js"></script>
 </body>
-
 </html>
